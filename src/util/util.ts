@@ -1,4 +1,8 @@
+import { NextFunction } from 'connect';
+import { Request, Response } from 'express';
 import fs from "fs";
+import * as jwt from 'jsonwebtoken';
+import { User } from "../interface/user";
 import Jimp = require("jimp");
 
 // filterImageFromURL
@@ -35,5 +39,26 @@ export async function filterImageFromURL(inputURL: string): Promise<string> {
 export async function deleteLocalFiles(files: Array<string>) {
   for (let file of files) {
     fs.unlinkSync(file);
+  }
+}
+export function generateJWT(user: User): string {
+  return jwt.sign({username: user.username, id: user.id}, 'secret-token-test', {
+    expiresIn: '10d'
+  });
+}
+
+export function auth() {
+  return function (req: Request, res: Response, next: NextFunction) {
+    if (!req.headers || !req.headers.authorization){
+        return res.status(401).send({ message: 'No authorization headers.' });
+    }
+    const tokenBearer = req.headers.authorization.replace('Bearer ', '');
+
+    return jwt.verify(tokenBearer, "secret-token-test", (err, decoded) => {
+      if (err) {
+        return res.status(401).send({ auth: false, message: 'Failed to authenticate.' });
+      }
+      return next();
+    });
   }
 }
