@@ -1,5 +1,5 @@
 import bodyParser from "body-parser";
-import express from "express";
+import express, { Request, Response } from "express";
 import { User } from "./interface/user";
 import { auth, deleteLocalFiles, filterImageFromURL, generateJWT } from "./util/util";
 
@@ -24,11 +24,11 @@ import { auth, deleteLocalFiles, filterImageFromURL, generateJWT } from "./util/
     },
   ];
 
-  app.get("/", async (req, res) => {
+  app.get("/", async (req: Request, res: Response) => {
     res.send("try GET /filteredimage?image_url={{}}");
   });
 
-  app.post("/signup", (req, res) => {
+  app.post("/signup", (req: Request, res: Response) => {
     const { username, password } = req.body;
 
     if (!username || !password) {
@@ -68,7 +68,7 @@ import { auth, deleteLocalFiles, filterImageFromURL, generateJWT } from "./util/
     });
   });
 
-  app.post("/login", (req, res) => {
+  app.post("/login", (req: Request, res: Response) => {
     const { username, password } = req.body;
 
     if (!username || !password) {
@@ -113,9 +113,9 @@ import { auth, deleteLocalFiles, filterImageFromURL, generateJWT } from "./util/
   // RETURNS
   //   the filtered image file [!!TIP res.sendFile(filteredpath); might be useful]
 
-  app.get("/filteredimage", auth(), async (req, res) => {
+  app.get("/filteredimage", auth(), async (req: Request, res: Response) => {
     try {
-      const image_url = req.query.image_url.toString();
+      const image_url: string = req.query.image_url.toString();
       if (!image_url || image_url.length === 0) {
         return res
           .status(400)
