@@ -143,7 +143,7 @@ import { auth, deleteLocalFiles, filterImageFromURL, generateJWT } from "./util/
 
   //! END @TODO1
 
-  app.use("*", (req, res) => {
+  app.use("*", (req: Request, res: Response) => {
     return res.status(404).send({ message: "Endpoint Not Found" });
   });
 
